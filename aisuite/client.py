@@ -51,11 +51,12 @@ class Client:
 class Chat:
     def __init__(self, client: "Client"):
         self.client = client
+        self._completions = Completions(self.client)
 
     @property
     def completions(self):
         """Return the completions interface."""
-        return Completions(self.client)
+        return self._completions
 
 
 class Completions:
