@@ -2,8 +2,6 @@ import urllib.request
 import json
 from aisuite.provider import Provider
 from aisuite.framework import ChatCompletionResponse
-from typing import override
-import sys
 
 
 class AzureProvider(Provider):
@@ -13,7 +11,6 @@ class AzureProvider(Provider):
         if not self.api_key:
             raise ValueError("api_key is required in the config")
 
-    @override
     def chat_completions_create(self, model, messages, **kwargs):
         # TODO: Need to decide if we need to use base_url or just ignore it.
         # TODO: Remove the hardcoded region name to use environment variable.
