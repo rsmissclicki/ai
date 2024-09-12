@@ -91,7 +91,7 @@ class TestClient(unittest.TestCase):
 
         # Verify the error message
         self.assertIn(
-            "Provider INVALID_PROVIDER is not a valid ProviderNames enum",
+            "Provider INVALID_PROVIDER is not a valid provider",
             str(context.exception),
         )
 

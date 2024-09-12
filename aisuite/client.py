@@ -9,18 +9,33 @@ class Client:
         """
         self.providers = {}
         self.provider_configs = provider_configs
-        for provider_key, config in provider_configs.items():
-            # Check if the provider key is a valid ProviderNames enum
-            if not isinstance(provider_key, ProviderNames):
-                raise ValueError(
-                    f"Provider {provider_key} is not a valid ProviderNames enum"
-                )
-            # Store the value of the enum in the providers dictionary
+        self._chat = None
+        self._initialize_providers()
+
+    def _initialize_providers(self):
+        """Helper method to initialize or update providers."""
+        for provider_key, config in self.provider_configs.items():
+            provider_key = self._validate_provider_key(provider_key)
             self.providers[provider_key.value] = ProviderFactory.create_provider(
                 provider_key, config
             )
 
-        self._chat = None
+    def _validate_provider_key(self, provider_key):
+        """
+        Validate if the provider key is part of ProviderNames enum.
+        Allow strings as well and convert them to ProviderNames.
+        """
+        if isinstance(provider_key, str):
+            if provider_key not in ProviderNames._value2member_map_:
+                raise ValueError(f"Provider {provider_key} is not a valid provider")
+            return ProviderNames(provider_key)
+
+        if isinstance(provider_key, ProviderNames):
+            return provider_key
+
+        raise ValueError(
+            f"Provider {provider_key} should either be a string or enum ProviderNames"
+        )
 
     def configure(self, provider_configs: dict = None):
         """
@@ -30,15 +45,7 @@ class Client:
             return
 
         self.provider_configs.update(provider_configs)
-
-        for provider_key, config in self.provider_configs.items():
-            if not isinstance(provider_key, ProviderNames):
-                raise ValueError(
-                    f"Provider {provider_key} is not a valid ProviderNames enum"
-                )
-            self.providers[provider_key.value] = ProviderFactory.create_provider(
-                provider_key, config
-            )
+        self._initialize_providers()  # NOTE: This will override existing provider instances.
 
     @property
     def chat(self):
