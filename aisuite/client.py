@@ -6,6 +6,20 @@ class Client:
         """
         Initialize the client with provider configurations.
         Use the ProviderFactory to create provider instances.
+
+        Args:
+            provider_configs (dict): A dictionary containing provider configurations.
+                Each key should be a ProviderNames enum or its string representation,
+                and the value should be a dictionary of configuration options for that provider.
+                For example:
+                {
+                    ProviderNames.OPENAI: {"api_key": "your_openai_api_key"},
+                    "aws-bedrock": {
+                        "aws_access_key": "your_aws_access_key",
+                        "aws_secret_key": "your_aws_secret_key",
+                        "aws_region": "us-west-2"
+                    }
+                }
         """
         self.providers = {}
         self.provider_configs = provider_configs
@@ -84,8 +98,11 @@ class Completions:
         provider_key, model_name = model.split(":", 1)
 
         if provider_key not in ProviderNames._value2member_map_:
+            # If the provider key does not match, give a clearer message to guide the user
+            valid_providers = ", ".join([p.value for p in ProviderNames])
             raise ValueError(
-                f"Provider {provider_key} is not a valid ProviderNames enum"
+                f"Invalid provider key '{provider_key}'. Expected one of: {valid_providers}. "
+                "Make sure the model string is formatted correctly as 'provider:model'."
             )
 
         if provider_key not in self.client.providers:

@@ -3,29 +3,35 @@ from aisuite.provider import Provider, LLMError
 from aisuite.framework import ChatCompletionResponse
 
 
-# Used to call the AWS Bedrock converse API
-# Converse API provides consistent API, that works with all Amazon Bedrock models that support messages.
-# Eg: anthropic.claude-v2,
-#     meta.llama3-70b-instruct-v1:0,
-#     mistral.mixtral-8x7b-instruct-v0:1
-# The model value can be a baseModelId or provisionedModelArn.
-# Using a base model id gives on-demand throughput.
-# Use CreateProvisionedModelThroughput API to get provisionedModelArn for higher throughput.
-# https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids.html
 class AWSBedrockProvider(Provider):
     def __init__(self, **config):
         """
         Initialize the AWS Bedrock provider with the given configuration.
-        Pass the entire configuration dictionary to the Anthropic Bedrock client constructor.
+
+        This class uses the AWS Bedrock converse API, which provides a consistent interface
+        for all Amazon Bedrock models that support messages. Examples include:
+        - anthropic.claude-v2
+        - meta.llama3-70b-instruct-v1:0
+        - mistral.mixtral-8x7b-instruct-v0:1
+
+        The model value can be a baseModelId for on-demand throughput or a provisionedModelArn
+        for higher throughput. To obtain a provisionedModelArn, use the CreateProvisionedModelThroughput API.
+
+        For more information on model IDs, see:
+        https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids.html
+
+        Note:
+        - The Anthropic Bedrock client uses default AWS credential providers, such as
+          ~/.aws/credentials or the "AWS_SECRET_ACCESS_KEY" and "AWS_ACCESS_KEY_ID" environment variables.
+        - If the region is not set, it defaults to us-west-1, which may lead to a
+          "Could not connect to the endpoint URL" error.
+        - The client constructor does not accept additional parameters.
+
+        Args:
+            **config: Configuration options for the provider.
+
         """
-        # Anthropic Bedrock client will use the default AWS credential providers, such as
-        # using ~/.aws/credentials or the "AWS_SECRET_ACCESS_KEY" and "AWS_ACCESS_KEY_ID" environment variables.
-        # If region is not set, it will use a default to us-west-1 which can lead to error -
-        #   "Could not connect to the endpoint URL"
-        # It does not like parameters passed to the constructor.
         self.client = boto3.client("bedrock-runtime", region_name="us-west-2")
-        # Maintain a list of Inference Parameters which Bedrock supports.
-        # https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InferenceConfiguration.html
         self.inference_parameters = [
             "maxTokens",
             "temperature",
