@@ -23,23 +23,31 @@ class ProviderNames(str, Enum):
     ANTHROPIC = "anthropic"
     AZURE = "azure"
     GROQ = "groq"
+    GOOGLE = "google"
 
 
 class ProviderFactory:
     """Factory to register and create provider instances based on keys."""
 
     _provider_info = {
-        ProviderNames.OPENAI: ("aisuite.providers.openai_provider", "OpenAIProvider"),
+        ProviderNames.OPENAI: (
+            "aisuite.providers.openai_http_provider",
+            "OpenAIProvider",
+        ),
         ProviderNames.AWS_BEDROCK: (
             "aisuite.providers.aws_bedrock_provider",
             "AWSBedrockProvider",
         ),
         ProviderNames.ANTHROPIC: (
-            "aisuite.providers.anthropic_provider",
+            "aisuite.providers.anthropic_http_provider",
             "AnthropicProvider",
         ),
         ProviderNames.AZURE: ("aisuite.providers.azure_provider", "AzureProvider"),
         ProviderNames.GROQ: ("aisuite.providers.groq_provider", "GroqProvider"),
+        ProviderNames.GOOGLE: (
+            "aisuite.providers.google_http_provider",
+            "GoogleHttpProvider",
+        ),
     }
 
     @classmethod
