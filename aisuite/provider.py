@@ -45,10 +45,6 @@ class ProviderFactory:
         ),
         ProviderNames.AZURE: ("aisuite.providers.azure_provider", "AzureProvider"),
         ProviderNames.GROQ: ("aisuite.providers.groq_provider", "GroqProvider"),
-        ProviderNames.GOOGLE: (
-            "aisuite.providers.google_http_provider",
-            "GoogleHttpProvider",
-        ),
         ProviderNames.HUGGINGFACE: (
             "aisuite.providers.huggingface_provider",
             "HuggingFaceProvider",
