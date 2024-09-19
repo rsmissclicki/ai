@@ -1,20 +1,21 @@
 import urllib.request
 import json
+import os
+
 from aisuite.provider import Provider
 from aisuite.framework import ChatCompletionResponse
 
 
 class AzureProvider(Provider):
     def __init__(self, **config):
-        self.base_url = config.get("base_url")
-        self.api_key = config.get("api_key")
-        if not self.api_key:
+        self.base_url = config.get("base_url") or os.getenv("AZURE_BASE_URL")
+        self.api_key = config.get("api_key") or os.getenv("AZURE_API_KEY")
+        if not self.api_key or not self.base_url:
             raise ValueError("api_key is required in the config")
 
     def chat_completions_create(self, model, messages, **kwargs):
-        # TODO: Need to decide if we need to use base_url or just ignore it.
-        # TODO: Remove the hardcoded region name to use environment variable.
         url = f"https://{model}.westus3.models.ai.azure.com/v1/chat/completions"
+        url = f"https://{self.base_url}/chat/completions"
         if self.base_url:
             url = f"{self.base_url}/chat/completions"
 
