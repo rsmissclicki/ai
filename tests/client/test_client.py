@@ -5,7 +5,7 @@ from aisuite import ProviderNames
 
 
 class TestClient(unittest.TestCase):
-
+    @patch("aisuite.providers.mistral_provider.MistralProvider.chat_completions_create")
     @patch("aisuite.providers.groq_provider.GroqProvider.chat_completions_create")
     @patch("aisuite.providers.openai_provider.OpenAIProvider.chat_completions_create")
     @patch(
@@ -15,8 +15,16 @@ class TestClient(unittest.TestCase):
     @patch(
         "aisuite.providers.anthropic_provider.AnthropicProvider.chat_completions_create"
     )
+    @patch("aisuite.providers.google_provider.GoogleProvider.chat_completions_create")
     def test_client_chat_completions(
-        self, mock_anthropic, mock_azure, mock_bedrock, mock_openai, mock_groq
+        self,
+        mock_google,
+        mock_anthropic,
+        mock_azure,
+        mock_bedrock,
+        mock_openai,
+        mock_groq,
+        mock_mistral,
     ):
         # Mock responses from providers
         mock_openai.return_value = "OpenAI Response"
@@ -24,6 +32,8 @@ class TestClient(unittest.TestCase):
         mock_azure.return_value = "Azure Response"
         mock_anthropic.return_value = "Anthropic Response"
         mock_groq.return_value = "Groq Response"
+        mock_mistral.return_value = "Mistral Response"
+        mock_google.return_value = "Google Response"
 
         # Provider configurations
         provider_configs = {
@@ -39,6 +49,14 @@ class TestClient(unittest.TestCase):
             },
             ProviderNames.GROQ: {
                 "api_key": "groq-api-key",
+            },
+            ProviderNames.MISTRAL: {
+                "api_key": "mistral-api-key",
+            },
+            ProviderNames.GOOGLE: {
+                "project_id": "test_google_project_id",
+                "region": "us-west4",
+                "application_credentials": "test_google_application_credentials",
             },
         }
 
@@ -83,8 +101,24 @@ class TestClient(unittest.TestCase):
         # Test Groq model
         groq_model = ProviderNames.GROQ + ":" + "groq-model"
         groq_response = client.chat.completions.create(groq_model, messages=messages)
-        self.assertEqual(openai_response, "OpenAI Response")
+        self.assertEqual(groq_response, "Groq Response")
         mock_groq.assert_called_once()
+
+        # Test Mistral model
+        mistral_model = ProviderNames.MISTRAL + ":" + "mistral-model"
+        mistral_response = client.chat.completions.create(
+            mistral_model, messages=messages
+        )
+        self.assertEqual(mistral_response, "Mistral Response")
+        mock_mistral.assert_called_once()
+
+        # Test Google model
+        google_model = ProviderNames.GOOGLE + ":" + "google-model"
+        google_response = client.chat.completions.create(
+            google_model, messages=messages
+        )
+        self.assertEqual(google_response, "Google Response")
+        mock_google.assert_called_once()
 
         # Test that new instances of Completion are not created each time we make an inference call.
         compl_instance = client.chat.completions

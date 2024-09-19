@@ -14,7 +14,7 @@ class GroqProvider(Provider):
         config.setdefault("api_key", os.getenv("GROQ_API_KEY"))
         if not config["api_key"]:
             raise ValueError(
-                " API key is missing. Please provide it in the config or set the OPENAI_API_KEY environment variable."
+                " API key is missing. Please provide it in the config or set the GROQ_API_KEY environment variable."
             )
         self.client = groq.Groq(**config)
 

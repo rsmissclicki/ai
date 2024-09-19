@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from aisuite.providers.google_interface import GoogleInterface
+from aisuite.providers.google_provider import GoogleProvider
 from vertexai.generative_models import Content, Part
 
 
@@ -16,7 +16,7 @@ def test_missing_env_vars():
     """Test that an error is raised if required environment variables are missing."""
     with patch.dict("os.environ", {}, clear=True):
         with pytest.raises(EnvironmentError) as exc_info:
-            GoogleInterface()
+            GoogleProvider()
         assert "Missing one or more required Google environment variables" in str(
             exc_info.value
         )
@@ -30,19 +30,21 @@ def test_vertex_interface():
     selected_model = "our-favorite-model"
     response_text_content = "mocked-text-response-from-model"
 
-    interface = GoogleInterface()
+    interface = GoogleProvider()
     mock_response = MagicMock()
     mock_response.candidates = [MagicMock()]
     mock_response.candidates[0].content.parts[0].text = response_text_content
 
-    with patch("vertexai.generative_models.GenerativeModel") as mock_generative_model:
+    with patch(
+        "aisuite.providers.google_provider.GenerativeModel"
+    ) as mock_generative_model:
         mock_model = MagicMock()
         mock_generative_model.return_value = mock_model
         mock_chat = MagicMock()
         mock_model.start_chat.return_value = mock_chat
         mock_chat.send_message.return_value = mock_response
 
-        response = interface.chat_completion_create(
+        response = interface.chat_completions_create(
             messages=message_history,
             model=selected_model,
             temperature=0.7,
@@ -68,7 +70,7 @@ def test_vertex_interface():
 
 
 def test_convert_openai_to_vertex_ai():
-    interface = GoogleInterface()
+    interface = GoogleProvider()
     message_history = [{"role": "user", "content": "Hello!"}]
     result = interface.convert_openai_to_vertex_ai(message_history)
     assert isinstance(result[0], Content)
@@ -79,7 +81,7 @@ def test_convert_openai_to_vertex_ai():
 
 
 def test_transform_roles():
-    interface = GoogleInterface()
+    interface = GoogleProvider()
 
     messages = [
         {"role": "system", "content": "Google: system message = 1st user message."},
