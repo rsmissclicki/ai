@@ -84,7 +84,6 @@ class GoogleHttpProvider(Provider):
 
                 # Parse the JSON response
                 resp_json = resp.json()
-                print(resp_json)
 
                 # Create the single choice with the concatenated message
                 completion_response = ChatCompletionResponse()
