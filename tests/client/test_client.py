@@ -46,6 +46,7 @@ class TestClient(unittest.TestCase):
             },
             ProviderNames.AZURE: {
                 "api_key": "azure-api-key",
+                "base_url": "https://model.ai.azure.com",
             },
             ProviderNames.GROQ: {
                 "api_key": "groq-api-key",

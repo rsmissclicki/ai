@@ -10,8 +10,12 @@ class AzureProvider(Provider):
     def __init__(self, **config):
         self.base_url = config.get("base_url") or os.getenv("AZURE_BASE_URL")
         self.api_key = config.get("api_key") or os.getenv("AZURE_API_KEY")
-        if not self.api_key or not self.base_url:
-            raise ValueError("api_key is required in the config")
+        if not self.api_key:
+            raise ValueError("For Azure, api_key is required.")
+        if not self.base_url:
+            raise ValueError(
+                "For Azure, base_url is required. Check your deployment page for a URL like this - https://<model-deployment-name>.<region>.models.ai.azure.com"
+            )
 
     def chat_completions_create(self, model, messages, **kwargs):
         url = f"https://{model}.westus3.models.ai.azure.com/v1/chat/completions"
