@@ -25,6 +25,7 @@ class ProviderNames(str, Enum):
     GOOGLE = "google"
     HUGGINGFACE = "huggingface"
     MISTRAL = "mistral"
+    OLLAMA = "ollama"
     OPENAI = "openai"
 
 
@@ -51,6 +52,7 @@ class ProviderFactory:
             "aisuite.providers.mistral_provider",
             "MistralProvider",
         ),
+        ProviderNames.OLLAMA: ("aisuite.providers.ollama_provider", "OllamaProvider"),
         ProviderNames.OPENAI: ("aisuite.providers.openai_provider", "OpenAIProvider"),
     }
 
