@@ -12,7 +12,8 @@ class OllamaProvider(Provider):
     If OLLAMA_API_URL is not set and not passed in config, then it will default to "http://localhost:11434"
     """
 
-    CHAT_COMPLETION_ENDPOINT = "/api/chat"
+    _CHAT_COMPLETION_ENDPOINT = "/api/chat"
+    _CONNECT_ERROR_MESSAGE = "Ollama is likely not running. Start Ollama by running `ollama serve` on your host."
 
     def __init__(self, **config):
         """
@@ -38,17 +39,18 @@ class OllamaProvider(Provider):
 
         try:
             response = httpx.post(
-                self.url.rstrip("/") + self.CHAT_COMPLETION_ENDPOINT,
+                self.url.rstrip("/") + self._CHAT_COMPLETION_ENDPOINT,
                 json=data,
                 timeout=self.timeout,
             )
             response.raise_for_status()
+        except httpx.ConnectError:  # Handle connection errors
+            raise LLMError(f"Connection failed: {self._CONNECT_ERROR_MESSAGE}")
         except httpx.HTTPStatusError as http_err:
-            raise LLMError(f"OpenAI API request failed: {http_err}")
+            raise LLMError(f"Ollama request failed: {http_err}")
         except Exception as e:
             raise LLMError(f"An error occurred: {e}")
 
-        print(response.json())
         # Return the normalized response
         return self._normalize_response(response.json())
 
