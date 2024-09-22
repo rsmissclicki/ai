@@ -19,7 +19,7 @@ class Provider(ABC):
 
 class ProviderNames(str, Enum):
     ANTHROPIC = "anthropic"
-    AWS_BEDROCK = "aws-bedrock"
+    AWS = "aws"
     AZURE = "azure"
     GROQ = "groq"
     GOOGLE = "google"
@@ -37,7 +37,7 @@ class ProviderFactory:
             "aisuite.providers.anthropic_provider",
             "AnthropicProvider",
         ),
-        ProviderNames.AWS_BEDROCK: (
+        ProviderNames.AWS: (
             "aisuite.providers.aws_bedrock_provider",
             "AWSBedrockProvider",
         ),
