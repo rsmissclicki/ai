@@ -38,7 +38,7 @@ class TestClient(unittest.TestCase):
         # Provider configurations
         provider_configs = {
             ProviderNames.OPENAI: {"api_key": "test_openai_api_key"},
-            ProviderNames.AWS_BEDROCK: {
+            ProviderNames.AWS: {
                 "aws_access_key": "test_aws_access_key",
                 "aws_secret_key": "test_aws_secret_key",
                 "aws_session_token": "test_aws_session_token",
@@ -78,7 +78,7 @@ class TestClient(unittest.TestCase):
         mock_openai.assert_called_once()
 
         # Test AWS Bedrock model
-        bedrock_model = ProviderNames.AWS_BEDROCK + ":" + "claude-v3"
+        bedrock_model = ProviderNames.AWS + ":" + "claude-v3"
         bedrock_response = client.chat.completions.create(
             bedrock_model, messages=messages
         )
