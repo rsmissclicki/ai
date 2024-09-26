@@ -75,7 +75,6 @@ for model in models:
 ```
 Note that the model name in the create() call needs to be replaced with `<provider>:<model-name>`
 aisuite will call the appropriate provider with the right parameters based on the provider value.
-The current list of supported providers can be found by executing `aisuite.ProviderNames.values()`
 
 For more examples, check out the `examples` directory where you will find several
 notebooks that you can run to experiment with the interface.
