@@ -28,6 +28,7 @@ class ProviderNames(str, Enum):
     MISTRAL = "mistral"
     OLLAMA = "ollama"
     OPENAI = "openai"
+    TOGETHER = "together"
 
 
 class ProviderFactory:
@@ -58,6 +59,10 @@ class ProviderFactory:
         ProviderNames.FIREWORKS: (
             "aisuite.providers.fireworks_provider",
             "FireworksProvider",
+        ),
+        ProviderNames.TOGETHER: (
+            "aisuite.providers.together_provider",
+            "TogetherProvider",
         ),
     }
 
