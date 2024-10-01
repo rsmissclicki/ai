@@ -16,8 +16,12 @@ class TestClient(unittest.TestCase):
         "aisuite.providers.anthropic_provider.AnthropicProvider.chat_completions_create"
     )
     @patch("aisuite.providers.google_provider.GoogleProvider.chat_completions_create")
+    @patch(
+        "aisuite.providers.fireworks_provider.FireworksProvider.chat_completions_create"
+    )
     def test_client_chat_completions(
         self,
+        mock_fireworks,
         mock_google,
         mock_anthropic,
         mock_azure,
@@ -34,6 +38,7 @@ class TestClient(unittest.TestCase):
         mock_groq.return_value = "Groq Response"
         mock_mistral.return_value = "Mistral Response"
         mock_google.return_value = "Google Response"
+        mock_fireworks.return_value = "Fireworks Response"
 
         # Provider configurations
         provider_configs = {
@@ -58,6 +63,9 @@ class TestClient(unittest.TestCase):
                 "project_id": "test_google_project_id",
                 "region": "us-west4",
                 "application_credentials": "test_google_application_credentials",
+            },
+            ProviderNames.FIREWORKS: {
+                "api_key": "fireworks-api-key",
             },
         }
 
@@ -120,6 +128,14 @@ class TestClient(unittest.TestCase):
         )
         self.assertEqual(google_response, "Google Response")
         mock_google.assert_called_once()
+
+        # Test Fireworks model
+        fireworks_model = ProviderNames.FIREWORKS + ":" + "fireworks-model"
+        fireworks_response = client.chat.completions.create(
+            fireworks_model, messages=messages
+        )
+        self.assertEqual(fireworks_response, "Fireworks Response")
+        mock_fireworks.assert_called_once()
 
         # Test that new instances of Completion are not created each time we make an inference call.
         compl_instance = client.chat.completions

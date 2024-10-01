@@ -21,6 +21,7 @@ class ProviderNames(str, Enum):
     ANTHROPIC = "anthropic"
     AWS = "aws"
     AZURE = "azure"
+    FIREWORKS = "fireworks"
     GROQ = "groq"
     GOOGLE = "google"
     HUGGINGFACE = "huggingface"
@@ -54,6 +55,10 @@ class ProviderFactory:
         ),
         ProviderNames.OLLAMA: ("aisuite.providers.ollama_provider", "OllamaProvider"),
         ProviderNames.OPENAI: ("aisuite.providers.openai_provider", "OpenAIProvider"),
+        ProviderNames.FIREWORKS: (
+            "aisuite.providers.fireworks_provider",
+            "FireworksProvider",
+        ),
     }
 
     @classmethod
