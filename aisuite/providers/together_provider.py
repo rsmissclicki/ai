@@ -16,7 +16,7 @@ class TogetherProvider(Provider):
         Initialize the Fireworks provider with the given configuration.
         The API key is fetched from the config or environment variables.
         """
-        self.api_key = config.get("api_key") or os.getenv("TOGETHER_API_KEY")
+        self.api_key = config.get("api_key", os.getenv("TOGETHER_API_KEY"))
         if not self.api_key:
             raise ValueError(
                 "Together API key is missing. Please provide it in the config or set the TOGETHER_API_KEY environment variable."
