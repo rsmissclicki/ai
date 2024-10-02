@@ -1,4 +1,4 @@
-from .provider import ProviderFactory, ProviderNames
+from .provider import ProviderFactory
 
 
 class Client:
@@ -9,11 +9,11 @@ class Client:
 
         Args:
             provider_configs (dict): A dictionary containing provider configurations.
-                Each key should be a ProviderNames enum or its string representation,
+                Each key should be a provider string (e.g., "google" or "aws-bedrock"),
                 and the value should be a dictionary of configuration options for that provider.
                 For example:
                 {
-                    ProviderNames.OPENAI: {"api_key": "your_openai_api_key"},
+                    "openai": {"api_key": "your_openai_api_key"},
                     "aws-bedrock": {
                         "aws_access_key": "your_aws_access_key",
                         "aws_secret_key": "your_aws_secret_key",
@@ -30,26 +30,23 @@ class Client:
         """Helper method to initialize or update providers."""
         for provider_key, config in self.provider_configs.items():
             provider_key = self._validate_provider_key(provider_key)
-            self.providers[provider_key.value] = ProviderFactory.create_provider(
+            self.providers[provider_key] = ProviderFactory.create_provider(
                 provider_key, config
             )
 
     def _validate_provider_key(self, provider_key):
         """
-        Validate if the provider key is part of ProviderNames enum.
-        Allow strings as well and convert them to ProviderNames.
+        Validate if the provider key corresponds to a supported provider.
         """
-        if isinstance(provider_key, str):
-            if provider_key not in ProviderNames._value2member_map_:
-                raise ValueError(f"Provider {provider_key} is not a valid provider")
-            return ProviderNames(provider_key)
+        supported_providers = ProviderFactory.get_supported_providers()
 
-        if isinstance(provider_key, ProviderNames):
-            return provider_key
+        if provider_key not in supported_providers:
+            raise ValueError(
+                f"Invalid provider key '{provider_key}'. Supported providers: {supported_providers}. "
+                "Make sure the model string is formatted correctly as 'provider:model'."
+            )
 
-        raise ValueError(
-            f"Provider {provider_key} should either be a string or enum ProviderNames"
-        )
+        return provider_key
 
     def configure(self, provider_configs: dict = None):
         """
@@ -94,30 +91,27 @@ class Completions:
                 f"Invalid model format. Expected 'provider:model', got '{model}'"
             )
 
-        # Extract the provider key from the model identifier, e.g., "aws-bedrock:model-name"
+        # Extract the provider key from the model identifier, e.g., "google:gemini-xx"
         provider_key, model_name = model.split(":", 1)
 
-        if provider_key not in ProviderNames._value2member_map_:
-            # If the provider key does not match, give a clearer message to guide the user
-            valid_providers = ", ".join([p.value for p in ProviderNames])
+        # Validate if the provider is supported
+        supported_providers = ProviderFactory.get_supported_providers()
+        if provider_key not in supported_providers:
             raise ValueError(
-                f"Invalid provider key '{provider_key}'. Expected one of: {valid_providers}. "
+                f"Invalid provider key '{provider_key}'. Supported providers: {supported_providers}. "
                 "Make sure the model string is formatted correctly as 'provider:model'."
             )
 
+        # Initialize provider if not already initialized
         if provider_key not in self.client.providers:
-            config = {}
-            if provider_key in self.client.provider_configs:
-                config = self.client.provider_configs[provider_key]
+            config = self.client.provider_configs.get(provider_key, {})
             self.client.providers[provider_key] = ProviderFactory.create_provider(
-                ProviderNames(provider_key), config
+                provider_key, config
             )
 
         provider = self.client.providers.get(provider_key)
         if not provider:
-            raise ValueError(f"Could not load provider for {provider_key}.")
+            raise ValueError(f"Could not load provider for '{provider_key}'.")
 
         # Delegate the chat completion to the correct provider's implementation
-        # Any additional arguments will be passed to the provider's implementation.
-        # Eg: max_tokens, temperature, etc.
         return provider.chat_completions_create(model_name, messages, **kwargs)

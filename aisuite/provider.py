@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
-from enum import Enum
+from pathlib import Path
 import importlib
+import os
+import functools
 
 
 class LLMError(Exception):
@@ -17,68 +19,35 @@ class Provider(ABC):
         pass
 
 
-class ProviderNames(str, Enum):
-    ANTHROPIC = "anthropic"
-    AWS = "aws"
-    AZURE = "azure"
-    GROQ = "groq"
-    GOOGLE = "google"
-    HUGGINGFACE = "huggingface"
-    MISTRAL = "mistral"
-    OLLAMA = "ollama"
-    OPENAI = "openai"
-
-
 class ProviderFactory:
-    """Factory to register and create provider instances based on keys."""
+    """Factory to dynamically load provider instances based on naming conventions."""
 
-    _provider_info = {
-        ProviderNames.ANTHROPIC: (
-            "aisuite.providers.anthropic_provider",
-            "AnthropicProvider",
-        ),
-        ProviderNames.AWS: (
-            "aisuite.providers.aws_bedrock_provider",
-            "AWSBedrockProvider",
-        ),
-        ProviderNames.AZURE: ("aisuite.providers.azure_provider", "AzureProvider"),
-        ProviderNames.GOOGLE: ("aisuite.providers.google_provider", "GoogleProvider"),
-        ProviderNames.GROQ: ("aisuite.providers.groq_provider", "GroqProvider"),
-        ProviderNames.HUGGINGFACE: (
-            "aisuite.providers.huggingface_provider",
-            "HuggingFaceProvider",
-        ),
-        ProviderNames.MISTRAL: (
-            "aisuite.providers.mistral_provider",
-            "MistralProvider",
-        ),
-        ProviderNames.OLLAMA: ("aisuite.providers.ollama_provider", "OllamaProvider"),
-        ProviderNames.OPENAI: ("aisuite.providers.openai_provider", "OpenAIProvider"),
-    }
+    PROVIDERS_DIR = Path(__file__).parent / "providers"
 
     @classmethod
     def create_provider(cls, provider_key, config):
-        """Dynamically import and create an instance of a provider based on the provider key."""
-        if not isinstance(provider_key, ProviderNames):
-            raise ValueError(
-                f"Provider {provider_key} is not a valid ProviderNames enum"
-            )
+        """Dynamically load and create an instance of a provider based on the naming convention."""
+        # Convert provider_key to the expected module and class names
+        provider_class_name = f"{provider_key.capitalize()}Provider"
+        provider_module_name = f"{provider_key}_provider"
 
-        module_name, class_name = cls._get_provider_info(provider_key)
-        if not module_name:
-            raise ValueError(f"Provider {provider_key.value} is not supported")
+        module_path = f"aisuite.providers.{provider_module_name}"
 
         # Lazily load the module
         try:
-            module = importlib.import_module(module_name)
+            module = importlib.import_module(module_path)
         except ImportError as e:
-            raise ImportError(f"Could not import module {module_name}: {str(e)}")
+            raise ImportError(
+                f"Could not import module {module_path}: {str(e)}. Please ensure the provider is supported by doing ProviderFactory.get_supported_providers()"
+            )
 
         # Instantiate the provider class
-        provider_class = getattr(module, class_name)
+        provider_class = getattr(module, provider_class_name)
         return provider_class(**config)
 
     @classmethod
-    def _get_provider_info(cls, provider_key):
-        """Return the module name and class name for a given provider key."""
-        return cls._provider_info.get(provider_key, (None, None))
+    @functools.cache
+    def get_supported_providers(cls):
+        """List all supported provider names based on files present in the providers directory."""
+        provider_files = Path(cls.PROVIDERS_DIR).glob("*_provider.py")
+        return [file.stem.replace("_provider", "") for file in provider_files]

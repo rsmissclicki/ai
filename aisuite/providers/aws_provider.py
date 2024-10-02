@@ -5,7 +5,7 @@ from aisuite.provider import Provider, LLMError
 from aisuite.framework import ChatCompletionResponse
 
 
-class AWSBedrockProvider(Provider):
+class AwsProvider(Provider):
     def __init__(self, **config):
         """
         Initialize the AWS Bedrock provider with the given configuration.

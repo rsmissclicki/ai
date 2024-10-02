@@ -3,7 +3,7 @@ import os
 from aisuite.provider import Provider, LLMError
 
 
-class OpenAIProvider(Provider):
+class OpenaiProvider(Provider):
     def __init__(self, **config):
         """
         Initialize the OpenAI provider with the given configuration.

@@ -1,16 +1,13 @@
 import unittest
 from unittest.mock import patch
 from aisuite import Client
-from aisuite import ProviderNames
 
 
 class TestClient(unittest.TestCase):
     @patch("aisuite.providers.mistral_provider.MistralProvider.chat_completions_create")
     @patch("aisuite.providers.groq_provider.GroqProvider.chat_completions_create")
-    @patch("aisuite.providers.openai_provider.OpenAIProvider.chat_completions_create")
-    @patch(
-        "aisuite.providers.aws_bedrock_provider.AWSBedrockProvider.chat_completions_create"
-    )
+    @patch("aisuite.providers.openai_provider.OpenaiProvider.chat_completions_create")
+    @patch("aisuite.providers.aws_provider.AwsProvider.chat_completions_create")
     @patch("aisuite.providers.azure_provider.AzureProvider.chat_completions_create")
     @patch(
         "aisuite.providers.anthropic_provider.AnthropicProvider.chat_completions_create"
@@ -37,24 +34,24 @@ class TestClient(unittest.TestCase):
 
         # Provider configurations
         provider_configs = {
-            ProviderNames.OPENAI: {"api_key": "test_openai_api_key"},
-            ProviderNames.AWS: {
+            "openai": {"api_key": "test_openai_api_key"},
+            "aws": {
                 "aws_access_key": "test_aws_access_key",
                 "aws_secret_key": "test_aws_secret_key",
                 "aws_session_token": "test_aws_session_token",
                 "aws_region": "us-west-2",
             },
-            ProviderNames.AZURE: {
+            "azure": {
                 "api_key": "azure-api-key",
                 "base_url": "https://model.ai.azure.com",
             },
-            ProviderNames.GROQ: {
+            "groq": {
                 "api_key": "groq-api-key",
             },
-            ProviderNames.MISTRAL: {
+            "mistral": {
                 "api_key": "mistral-api-key",
             },
-            ProviderNames.GOOGLE: {
+            "google": {
                 "project_id": "test_google_project_id",
                 "region": "us-west4",
                 "application_credentials": "test_google_application_credentials",
@@ -70,7 +67,7 @@ class TestClient(unittest.TestCase):
         ]
 
         # Test OpenAI model
-        open_ai_model = ProviderNames.OPENAI + ":" + "gpt-4o"
+        open_ai_model = "openai" + ":" + "gpt-4o"
         openai_response = client.chat.completions.create(
             open_ai_model, messages=messages
         )
@@ -78,7 +75,7 @@ class TestClient(unittest.TestCase):
         mock_openai.assert_called_once()
 
         # Test AWS Bedrock model
-        bedrock_model = ProviderNames.AWS + ":" + "claude-v3"
+        bedrock_model = "aws" + ":" + "claude-v3"
         bedrock_response = client.chat.completions.create(
             bedrock_model, messages=messages
         )
@@ -86,13 +83,13 @@ class TestClient(unittest.TestCase):
         mock_bedrock.assert_called_once()
 
         # Test Azure model
-        azure_model = ProviderNames.AZURE + ":" + "azure-model"
+        azure_model = "azure" + ":" + "azure-model"
         azure_response = client.chat.completions.create(azure_model, messages=messages)
         self.assertEqual(azure_response, "Azure Response")
         mock_azure.assert_called_once()
 
         # Test Anthropic model
-        anthropic_model = ProviderNames.ANTHROPIC + ":" + "anthropic-model"
+        anthropic_model = "anthropic" + ":" + "anthropic-model"
         anthropic_response = client.chat.completions.create(
             anthropic_model, messages=messages
         )
@@ -100,13 +97,13 @@ class TestClient(unittest.TestCase):
         mock_anthropic.assert_called_once()
 
         # Test Groq model
-        groq_model = ProviderNames.GROQ + ":" + "groq-model"
+        groq_model = "groq" + ":" + "groq-model"
         groq_response = client.chat.completions.create(groq_model, messages=messages)
         self.assertEqual(groq_response, "Groq Response")
         mock_groq.assert_called_once()
 
         # Test Mistral model
-        mistral_model = ProviderNames.MISTRAL + ":" + "mistral-model"
+        mistral_model = "mistral" + ":" + "mistral-model"
         mistral_response = client.chat.completions.create(
             mistral_model, messages=messages
         )
@@ -114,7 +111,7 @@ class TestClient(unittest.TestCase):
         mock_mistral.assert_called_once()
 
         # Test Google model
-        google_model = ProviderNames.GOOGLE + ":" + "google-model"
+        google_model = "google" + ":" + "google-model"
         google_response = client.chat.completions.create(
             google_model, messages=messages
         )
@@ -126,11 +123,10 @@ class TestClient(unittest.TestCase):
         next_compl_instance = client.chat.completions
         assert compl_instance is next_compl_instance
 
-    @patch("aisuite.providers.openai_provider.OpenAIProvider.chat_completions_create")
-    def test_invalid_provider_in_client_config(self, mock_openai):
+    def test_invalid_provider_in_client_config(self):
         # Testing an invalid provider name in the configuration
         invalid_provider_configs = {
-            "INVALID_PROVIDER": {"api_key": "invalid_api_key"},
+            "invalid_provider": {"api_key": "invalid_api_key"},
         }
 
         # Expect ValueError when initializing Client with invalid provider
@@ -139,19 +135,19 @@ class TestClient(unittest.TestCase):
 
         # Verify the error message
         self.assertIn(
-            "Provider INVALID_PROVIDER is not a valid provider",
+            "Invalid provider key 'invalid_provider'. Supported providers: ",
             str(context.exception),
         )
 
-    @patch("aisuite.providers.openai_provider.OpenAIProvider.chat_completions_create")
+    @patch("aisuite.providers.openai_provider.OpenaiProvider.chat_completions_create")
     def test_invalid_model_format_in_create(self, mock_openai):
         # Valid provider configurations
         provider_configs = {
-            ProviderNames.OPENAI: {"api_key": "test_openai_api_key"},
+            "openai": {"api_key": "test_openai_api_key"},
         }
 
         # Initialize the client with valid provider
-        client = Client(provider_configs)
+        client = Client()
         client.configure(provider_configs)
 
         messages = [
