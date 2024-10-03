@@ -61,7 +61,7 @@ class TestClient(unittest.TestCase):
                 "region": "us-west4",
                 "application_credentials": "test_google_application_credentials",
             },
-            ProviderNames.FIREWORKS: {
+            "fireworks": {
                 "api_key": "fireworks-api-key",
             },
         }
@@ -127,7 +127,7 @@ class TestClient(unittest.TestCase):
         mock_google.assert_called_once()
 
         # Test Fireworks model
-        fireworks_model = ProviderNames.FIREWORKS + ":" + "fireworks-model"
+        fireworks_model = "fireworks" + ":" + "fireworks-model"
         fireworks_response = client.chat.completions.create(
             fireworks_model, messages=messages
         )
