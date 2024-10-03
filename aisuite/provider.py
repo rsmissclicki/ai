@@ -50,4 +50,4 @@ class ProviderFactory:
     def get_supported_providers(cls):
         """List all supported provider names based on files present in the providers directory."""
         provider_files = Path(cls.PROVIDERS_DIR).glob("*_provider.py")
-        return [file.stem.replace("_provider", "") for file in provider_files]
+        return {file.stem.replace("_provider", "") for file in provider_files}
