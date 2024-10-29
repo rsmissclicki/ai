@@ -1,4 +1,4 @@
-# AWS Bedrock
+# AWS
 
 To use AWS Bedrock with `aisuite` you will need to create an AWS account and
 navigate to `https://console.aws.amazon.com/bedrock/home`. This route
@@ -47,7 +47,7 @@ import aisuite as ai
 client = ai.Client()
 
 
-provider = "aws-bedrock"
+provider = "aws"
 model_id = "meta.llama3-1-405b-instruct-v1:0" # Model ID from above
 
 messages = [
