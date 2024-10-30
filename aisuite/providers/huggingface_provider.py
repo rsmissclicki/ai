@@ -4,7 +4,7 @@ from aisuite.provider import Provider, LLMError
 from aisuite.framework import ChatCompletionResponse
 
 
-class HuggingFaceProvider(Provider):
+class HuggingfaceProvider(Provider):
     """
     HuggingFace Provider using httpx for direct API calls.
     Currently, this provider support calls to HF serverless Inference Endpoints
