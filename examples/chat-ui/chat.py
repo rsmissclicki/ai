@@ -8,15 +8,13 @@ from dotenv import load_dotenv, find_dotenv
 sys.path.append("../../../aisuite")
 from aisuite.client import Client
 
-# Configure Streamlit to use wide mode and hide the menu
+# Configure Streamlit to use wide mode and hide the top streamlit menu
 st.set_page_config(layout="wide", menu_items={})
-
 # Add heading with padding
 st.markdown(
     "<div style='padding-top: 1rem;'><h2 style='text-align: center; color: #ffffff;'>Chat & Compare LLM responses</h2></div>",
     unsafe_allow_html=True,
 )
-
 st.markdown(
     """
     <style>
@@ -34,7 +32,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-# Add this near the top of the file, after st.set_page_config
 st.markdown(
     """
     <style>
@@ -43,21 +40,6 @@ st.markdown(
         header {visibility: hidden;}
         footer {visibility: hidden;}
         
-        /* Add custom checkbox label size */
-        .stCheckbox label p {
-            font-size: 14px !important;
-        }
-        
-        /* Add custom select box content size */
-        .stSelectbox div div div {
-            font-size: 14px !important;
-        }
-        
-        /* Add custom button text size */
-        .stButton button {
-            font-size: 14px !important;
-        }
-
         /* Remove top padding/margin */
         .block-container {
             padding-top: 0rem;
@@ -149,9 +131,7 @@ if "use_comparison_mode" not in st.session_state:
 # Top Section - Controls
 col1, col2 = st.columns([1, 2])
 with col1:
-    st.session_state.use_comparison_mode = st.checkbox(
-        "Enable Comparison Mode", value=True
-    )
+    st.session_state.use_comparison_mode = st.checkbox("Comparison Mode", value=True)
 
 # Move LLM selection below comparison mode checkbox - now in columns
 llm_col1, llm_col2 = st.columns(2)
@@ -236,20 +216,6 @@ with col3:
         st.session_state.chat_history_1 = []
         st.session_state.chat_history_2 = []
         st.rerun()
-
-# CSS to align buttons with the bottom of the text area
-st.markdown(
-    """
-    <style>
-        /* Align the "Send Query" and "Reset" buttons with the bottom of the text area */
-        .stTextArea, .stButton {
-            display: flex;
-            align-items: flex-end;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 # Handle send button click and processing
 if send_button and user_query and not st.session_state.is_processing:
