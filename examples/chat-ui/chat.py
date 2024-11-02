@@ -17,6 +17,23 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown(
+    """
+    <style>
+        /* Apply default font size globally */
+        html, body, [class*="css"] {
+            font-size: 14px !important;
+        }
+        
+        /* Style for Reset button focus */
+        button[data-testid="stButton"][aria-label="Reset Chat"]:focus {
+            border-color: red !important;
+            box-shadow: 0 0 0 2px red !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 # Add this near the top of the file, after st.set_page_config
 st.markdown(
     """
@@ -27,7 +44,7 @@ st.markdown(
         footer {visibility: hidden;}
         
         /* Add custom checkbox label size */
-        .stCheckbox label    p {
+        .stCheckbox label p {
             font-size: 14px !important;
         }
         
@@ -40,23 +57,7 @@ st.markdown(
         .stButton button {
             font-size: 14px !important;
         }
-        
-        /* Style for the text area - both normal and focused states */
-        .stTextArea textarea {
-            border-color: #333333 !important;
-            box-shadow: none !important;
-        }
-        
-        .stTextArea textarea:focus {
-            border-color: #1E90FF !important;
-            box-shadow: 0 0 0 1px #1E90FF !important;
-        }
-        
-        #text_area_1:focus {
-            border-color: #0066ff !important;
-            box-shadow: 0 0 0 1px #0066ff !important;
-        }
-        
+
         /* Remove top padding/margin */
         .block-container {
             padding-top: 0rem;
@@ -71,7 +72,7 @@ st.markdown(
         
         /* Custom CSS for scrollable chat container */
         .chat-container {
-            height: 600px;
+            height: 650px;
             overflow-y: auto !important;
             background-color: #1E1E1E;
             border: 1px solid #333;
@@ -90,11 +91,12 @@ st.markdown(
             margin: 10px 0;
             padding: 10px;
         }
+        
         #text_area_1 {
-            min-height: 50px !important;
+            min-height: 20px !important;
         } 
     </style>
-""",
+    """,
     unsafe_allow_html=True,
 )
 
@@ -174,31 +176,21 @@ with llm_col2:
 if st.session_state.use_comparison_mode:
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown(
-            f"<span style='font-size: 14px'>Chat with LLM 1: {selected_model_1}</span>",
-            unsafe_allow_html=True,
-        )
         chat_container = st.container(height=500)
         with chat_container:
             display_chat_history(st.session_state.chat_history_1, selected_model_1)
     with col2:
-        st.markdown(
-            f"<span style='font-size: 14px'>Chat with LLM 2: {selected_model_2}</span>",
-            unsafe_allow_html=True,
-        )
         chat_container = st.container(height=500)
         with chat_container:
             display_chat_history(st.session_state.chat_history_2, selected_model_2)
 else:
-    st.markdown(
-        f"<span style='font-size: 14px'>Chat with LLM: {selected_model_1}</span>",
-        unsafe_allow_html=True,
-    )
     chat_container = st.container(height=500)
     with chat_container:
         display_chat_history(st.session_state.chat_history_1, selected_model_1)
 
 # Bottom Section - User Input
+st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns([6, 1, 1])
 with col1:
     user_query = st.text_area(
@@ -206,26 +198,36 @@ with col1:
         label_visibility="collapsed",
         placeholder="Enter your query...",
         key="query_input",
-        height=80,
+        height=70,
     )
 
-    # Override st-e9 min-height for text area and add blue focus border
-    st.markdown(
-        """
-        <style>
-        #text_area_1 {
-            min-height: 50px !important;
+
+# CSS for aligning buttons with the bottom of the text area
+st.markdown(
+    """
+    <style>
+        /* Adjust the container of the buttons to align at the bottom */
+        .stButton > button {
+            margin-top: 35px !important; /* Adjust the margin to align */
         }
-        </style>
-    """,
-        unsafe_allow_html=True,
-    )
 
+        /* Align buttons and "Processing..." text to the bottom of the text area */
+        .button-container {
+            margin-top: 42px !important;
+            text-align: center; /* Center-aligns "Processing..." */
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 with col2:
     send_button = False  # Initialize send_button
     if st.session_state.is_processing:
-        st.markdown("Processing... ⏳")
+        st.markdown(
+            "<div class='button-container'>Processing... ⏳</div>",
+            unsafe_allow_html=True,
+        )
     else:
         send_button = st.button("Send Query", use_container_width=True)
 
@@ -234,6 +236,20 @@ with col3:
         st.session_state.chat_history_1 = []
         st.session_state.chat_history_2 = []
         st.rerun()
+
+# CSS to align buttons with the bottom of the text area
+st.markdown(
+    """
+    <style>
+        /* Align the "Send Query" and "Reset" buttons with the bottom of the text area */
+        .stTextArea, .stButton {
+            display: flex;
+            align-items: flex-end;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Handle send button click and processing
 if send_button and user_query and not st.session_state.is_processing:
