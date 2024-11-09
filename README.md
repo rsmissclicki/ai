@@ -4,10 +4,9 @@
 
 Simple, unified interface to multiple Generative AI providers.
 
-`aisuite` is an tool designed for developers who need to evaluate and compare the responses of
-multiple LLMs through a standardized interface. Based on the OpenAI interface standard, `aisuite`
-makes it easy to interact with the most popular LLMs and compare the results of their chat based
-functionality, with support for more interfaces coming in the near future.
+`aisuite` is an tool designed for developers who need to evaluate and compare the responses of multiple LLMs through a standardized interface. Based on the OpenAI interface standard, `aisuite` makes it easy to interact with the most popular LLMs and compare the results. It is a thin wrapper around python client libraries allowing creators to seamlessly swap out or test responses from a number of LLMs without changing their code.
+Today, the library is primarily focussed on chat completions, but will be expanded to cover more use cases in near future.
+
 
 Currently supported providers are -
 OpenAI, Anthropic, Azure, Google, AWS, Groq, Mistral, HuggingFace and Ollama.
@@ -15,13 +14,15 @@ Internally, aisuite uses either the HTTP endpoint or the SDK for making calls to
 
 ## Installation
 
+Users can install just the base `aisuite` package, or install a provider's package along with `aisuite`.
+
 This installs just the base package without installing any provider's SDK.
 
 ```shell
 pip install aisuite
 ```
 
-This installs anthropic along with anthropic
+This installs aisuite along with anthropic library.
 ```shell
 pip install aisuite[anthropic]
 ```
@@ -33,26 +34,21 @@ pip install aisuite[all]
 
 ## Set up
 
-This library provides a thin wrapper around python client libraries to interact with
-various Generative AI providers allowing creators to seamlessly swap out or test responses
-from a number of LLMs without changing their code.
-
 To get started you will need the API Keys for the providers you intend to use. You also need to
-install the provider specific library to use either separately or when installing aisuite.
+install the provider specific library either separately or when installing aisuite.
 
-The API Keys are expected to be in the host ENV and can be set manually or by using a tool such
-as [`python-dotenv`](https://pypi.org/project/python-dotenv/) or [`direnv`](https://direnv.net/).
+The API Keys can be set as environment variables, or can be passed as config to the aisuite Client constructor.
+Tools like [`python-dotenv`](https://pypi.org/project/python-dotenv/) or [`direnv`](https://direnv.net/) can be used to set the environment variables manually. Please take a look at the `examples` folder to see usage.
 
-For example if you wanted to use Antrophic's Claude 3.5 Sonnet in addition to OpenAI's ChatGPT 4o
-you would first need to set the API keys:
+Here is a short example of using `aisuite` to generate chat completion responses from gpt-4o and claude-3-5-sonnet.
 
+Set the API keys.
 ```shell
 export ANTHROPIC_API_KEY="your-anthropic-api-key"
 export OPENAI_API_KEY="your-openai-api-key"
 ```
 
-In your python code:
-
+Use the python client.
 ```python
 import aisuite as ai
 client = ai.Client()
@@ -73,16 +69,15 @@ for model in models:
     print(response.choices[0].message.content)
 
 ```
-Note that the model name in the create() call needs to be replaced with `<provider>:<model-name>`
-aisuite will call the appropriate provider with the right parameters based on the provider value.
+Note that the model name in the create() call is of the format - `<provider>:<model-name>`.
+`aisuite` will call the appropriate provider with the right parameters based on the provider value.
+For a list of provider values, you can look at the directory - `aisuite/providers/`. The list of supported providers are of the format - `<provider>_provider.py` in that directory. We welcome any provider to add support to this library by adding an implementation file in this directory. Please see section below for the same.
 
-For more examples, check out the `examples` directory where you will find several
-notebooks that you can run to experiment with the interface.
+For more examples, check out the `examples` directory where you will find several notebooks that you can run to experiment with the interface.
 
 ## License
 
-aisuite is released under the MIT License. You are free to use, modify, and distribute
-the code for both commercial and non-commercial purposes.
+aisuite is released under the MIT License. You are free to use, modify, and distribute the code for both commercial and non-commercial purposes.
 
 ## Contributing
 
