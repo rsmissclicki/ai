@@ -22,12 +22,12 @@ pip install aisuite
 
 This installs aisuite along with anthropic's library.
 ```shell
-pip install aisuite[anthropic]
+pip install 'aisuite[anthropic]'
 ```
 
 This installs all the provider-specific libraries
 ```shell
-pip install aisuite[all]
+pip install 'aisuite[all]'
 ```
 
 ## Set up
