@@ -1,4 +1,7 @@
 [![Lint](https://github.com/SermetPekin/aisuite/actions/workflows/black.yml/badge.svg)](https://github.com/SermetPekin/aisuite/actions/workflows/black.yml)
+[![](https://img.shields.io/github/license/SermetPekin/aisuite.svg)](https://github.com/SermetPekin/aisuite/blob/master/LICENSE.md) ![](https://img.shields.io/badge/python-3.10+-blue.svg)
+[![Downloads](https://static.pepy.tech/badge/aisuite)](https://pepy.tech/project/aisuite) [![Downloads](https://static.pepy.tech/badge/aisuite/month)](https://pepy.tech/project/aisuite) [![Downloads](https://pepy.tech/badge/aisuite/week)](https://pepy.tech/project/aisuite)
+
 
 # aisuite
 
