@@ -26,7 +26,7 @@ class OllamaProvider(Provider):
         # Optionally set a custom timeout (default to 30s)
         self.timeout = config.get("timeout", 30)
 
-    def chat_completions_create(self, model, messages, **kwargs):
+    def chat_completions_create(self, model, messages, timeout=None, **kwargs):
         """
         Makes a request to the chat completions endpoint using httpx.
         """
@@ -36,12 +36,16 @@ class OllamaProvider(Provider):
             "messages": messages,
             **kwargs,  # Pass any additional arguments to the API
         }
-
+        # Custom time out parameter
+        if timeout is None:
+            request_timeout = self.timeout
+        else:
+            request_timeout = timeout
         try:
             response = httpx.post(
                 self.url.rstrip("/") + self._CHAT_COMPLETION_ENDPOINT,
                 json=data,
-                timeout=self.timeout,
+                timeout=request_timeout,
             )
             response.raise_for_status()
         except httpx.ConnectError:  # Handle connection errors
