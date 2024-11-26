@@ -16,10 +16,6 @@ class SambanovaProvider(Provider):
                 "Sambanova API key is missing. Please provide it in the config or set the SAMBANOVA_API_KEY environment variable."
             )
 
-        # NOTE: We could choose to remove above lines for api_key since OpenAI will automatically
-        # infer certain values from the environment variables.
-        # Eg: OPENAI_API_KEY, OPENAI_ORG_ID, OPENAI_PROJECT_ID, OPENAI_BASE_URL, etc.
-
         # Pass the entire config to the OpenAI client constructor
         self.client = OpenAI(
             base_url="https://api.sambanova.ai/v1/",
@@ -27,10 +23,10 @@ class SambanovaProvider(Provider):
         )
 
     def chat_completions_create(self, model, messages, **kwargs):
-        # Any exception raised by OpenAI will be returned to the caller.
+        # Any exception raised by Sambanova will be returned to the caller.
         # Maybe we should catch them and raise a custom LLMError.
         return self.client.chat.completions.create(
             model=model,
             messages=messages,
-            **kwargs  # Pass any additional arguments to the OpenAI API
+            **kwargs  # Pass any additional arguments to the Sambanova API
         )
