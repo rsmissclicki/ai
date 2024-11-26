@@ -158,9 +158,9 @@ description of PR:
 git checkout -B <username>/<description>
 ```
 
-Please install the development and test dependencies:
+Please install the development dependencies:
 ```bash
-poetry install --with dev,test
+poetry install --with dev
 ```
 
 `aisuite` uses pre-commit to ensure the formatting is consistent:

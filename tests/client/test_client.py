@@ -4,28 +4,32 @@ from aisuite import Client
 
 
 class TestClient(unittest.TestCase):
-    @patch("aisuite.providers.mistral_provider.MistralProvider.chat_completions_create")
-    @patch("aisuite.providers.groq_provider.GroqProvider.chat_completions_create")
-    @patch("aisuite.providers.openai_provider.OpenaiProvider.chat_completions_create")
-    @patch("aisuite.providers.aws_provider.AwsProvider.chat_completions_create")
-    @patch("aisuite.providers.azure_provider.AzureProvider.chat_completions_create")
     @patch(
-        "aisuite.providers.anthropic_provider.AnthropicProvider.chat_completions_create"
+        "aisuite.providers.snowflake_provider.SnowflakeProvider.chat_completions_create"
     )
-    @patch("aisuite.providers.google_provider.GoogleProvider.chat_completions_create")
     @patch(
         "aisuite.providers.fireworks_provider.FireworksProvider.chat_completions_create"
     )
+    @patch("aisuite.providers.google_provider.GoogleProvider.chat_completions_create")
+    @patch(
+        "aisuite.providers.anthropic_provider.AnthropicProvider.chat_completions_create"
+    )
+    @patch("aisuite.providers.azure_provider.AzureProvider.chat_completions_create")
+    @patch("aisuite.providers.aws_provider.AwsProvider.chat_completions_create")
+    @patch("aisuite.providers.openai_provider.OpenaiProvider.chat_completions_create")
+    @patch("aisuite.providers.groq_provider.GroqProvider.chat_completions_create")
+    @patch("aisuite.providers.mistral_provider.MistralProvider.chat_completions_create")
     def test_client_chat_completions(
         self,
-        mock_fireworks,
-        mock_google,
-        mock_anthropic,
-        mock_azure,
-        mock_bedrock,
-        mock_openai,
-        mock_groq,
         mock_mistral,
+        mock_groq,
+        mock_openai,
+        mock_bedrock,
+        mock_azure,
+        mock_anthropic,
+        mock_google,
+        mock_fireworks,
+        mock_snowflake,
     ):
         # Mock responses from providers
         mock_openai.return_value = "OpenAI Response"
@@ -36,6 +40,7 @@ class TestClient(unittest.TestCase):
         mock_mistral.return_value = "Mistral Response"
         mock_google.return_value = "Google Response"
         mock_fireworks.return_value = "Fireworks Response"
+        mock_snowflake.return_value = "Snowflake Response"
 
         # Provider configurations
         provider_configs = {
@@ -63,6 +68,10 @@ class TestClient(unittest.TestCase):
             },
             "fireworks": {
                 "api_key": "fireworks-api-key",
+            },
+            "snowflake": {
+                "snowflake_jwt_token": "my_cool_jwt_token",
+                "snowflake_account_identifier": "my_cool_account_identifier",
             },
         }
 
@@ -134,6 +143,14 @@ class TestClient(unittest.TestCase):
         self.assertEqual(fireworks_response, "Fireworks Response")
         mock_fireworks.assert_called_once()
 
+        # Test Snowflake model
+        snowflake_model = "snowflake" + ":" + "snowflake-model"
+        snowflake_response = client.chat.completions.create(
+            snowflake_model, messages=messages
+        )
+        self.assertEqual(snowflake_response, "Snowflake Response")
+        mock_snowflake.assert_called_once()
+
         # Test that new instances of Completion are not created each time we make an inference call.
         compl_instance = client.chat.completions
         next_compl_instance = client.chat.completions
@@ -147,7 +164,7 @@ class TestClient(unittest.TestCase):
 
         # Expect ValueError when initializing Client with invalid provider
         with self.assertRaises(ValueError) as context:
-            client = Client(invalid_provider_configs)
+            Client(invalid_provider_configs)
 
         # Verify the error message
         self.assertIn(
