@@ -22,7 +22,7 @@ Set the `GOOGLE_PROJECT_ID` environment variable to the ID of your project. You 
 
 ### Set your preferred region in an environment variable.
 
-Set the `GOOGLE_REGION` environment variable to the ID of your project. You can find the Project ID by visiting the project dashboard in the "Project Info" section toward the top of the page.
+Set the `GOOGLE_REGION` environment variable to the ID of your project. You can find the region at the bottom of the Vertex AI service page.
 
 ## Create a Service Account For API Access
 
