@@ -14,17 +14,22 @@ class DatabricksProvider(Provider):
         """
         config.setdefault("host", os.getenv("DATABRICKS_HOST"))
         config.setdefault("token", os.getenv("DATABRICKS_TOKEN"))
+        config.setdefault("client_id", os.getenv("DATABRICKS_CLIENT_ID"))
+        config.setdefault("client_secret", os.getenv("DATABRICKS_CLIENT_SECRET"))
 
-        if not config["token"]:
-            raise ValueError(
-                " Token is missing. Please provide it in the config or set the DATABRICKS_TOKEN environment variable."
-            )
-        
         if not config["host"]: 
             raise ValueError(
                 " Host is missing. Please provide it in the config or set the DATABRICKS_HOST environment variable."
             )
         
+        if not (config["client_id"] and config["client_secret"]): 
+            if not config["token"]:
+                # no auth at all
+                raise ValueError(
+                    " Authentication is missing. Please provide client id and secret or token in the config or set the DATABRICKS_CLIENT_ID and DATABRICKS_CLIENT_SECRET or DATABRICKS_TOKEN environment variable."
+                )
+
+
         self.w = WorkspaceClient(**config)
 
     def chat_completions_create(self, model, messages, **kwargs):
