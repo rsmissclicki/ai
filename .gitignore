@@ -4,3 +4,6 @@ __pycache__/
 env/
 .env
 .google-adc
+ignore*.py
+ignore_local*.py
+
