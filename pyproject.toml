@@ -3,7 +3,16 @@ name = "aisuite"
 version = "0.1.7"
 description = "Uniform access layer for LLMs"
 authors = ["Andrew Ng"]
-maintainers = ["Andrew Ng", "Zachary Bloss"]
+maintainers = [
+    { email = "standsleeping@gmail.com" },
+    { name = "Kevin Solorio" },
+    { name = "Rohit Prasad", email = "rohit.prasad15@gmail.com" },
+    { name = "Jeff Tang" },
+    { name = "Andrew Ng" },
+    { name = "John Santerre" },
+    { name = "Zachary Bloss", email = "zacharybloss@gmail.com" },
+    { email = "rohit-rptless" }
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
