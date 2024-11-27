@@ -1,42 +1,36 @@
-import httpx
 import os
-from aisuite.provider import Provider, LLMError
+from aisuite.provider import Provider
+from openai import OpenAI
 
 
 class FeatherlessProvider(Provider):
-    BASE_URL = "https://api.featherless.ai/v1/chat/completions"
-
     def __init__(self, **config):
         """
         Initialize the Featherless provider with the given configuration.
         Pass the entire configuration dictionary to the OpenAI client constructor.
         """
         # Ensure API key is provided either in config or via environment variable
-        self.api_key = os.getenv("FEATHERLESS_API_KEY")
-        if not self.api_key:
+        config.setdefault("api_key", os.getenv("FEATHERLESS_API_KEY"))
+        if not config["api_key"]:
             raise ValueError(
-                "Featherless API key is missing. Please provide it in the config"
+                "Featherless API key is missing. Please provide it in the config or set the FEATHERLESS_API_KEY environment variable."
             )
 
+        # NOTE: We could choose to remove above lines for api_key since OpenAI will automatically
+        # infer certain values from the environment variables.
+        # Eg: OPENAI_API_KEY, OPENAI_ORG_ID, OPENAI_PROJECT_ID, OPENAI_BASE_URL, etc.
+
+        # Pass the entire config to the OpenAI client constructor
+        self.client = OpenAI(
+            base_url="https://api.featherless.ai/v1/",
+            api_key=config["api_key"],
+        )
+
     def chat_completions_create(self, model, messages, **kwargs):
-
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-        }
-
-        data = {
-            "model": model,
-            "messages": messages,
-            **kwargs,  # Pass any additional arguments to the API
-        }
-
-        try:
-            response = httpx.post(self.BASE_URL, json=data, headers=headers, timeout=30)
-            response.raise_for_status()
-        except httpx.HTTPStatusError as http_err:
-            raise LLMError(f"Featherless request failed: {http_err}")
-        except Exception as e:
-            raise LLMError(f"An error occurred: {e}")
-
-        return response.json()
+        # Any exception raised by OpenAI will be returned to the caller.
+        # Maybe we should catch them and raise a custom LLMError.
+        return self.client.chat.completions.create(
+            model=model,
+            messages=messages,
+            **kwargs  # Pass any additional arguments to the OpenAI API
+        )
