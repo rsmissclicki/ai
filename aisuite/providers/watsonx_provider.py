@@ -8,19 +8,18 @@ class WatsonxProvider(Provider):
     """
     WatsonX AI Provider using httpx for direct API calls.
     """
-
-    cluster_url = "eu-de.ml.cloud.ibm.com"
-    BASE_URL = f'https://{cluster_url}/ml/v1/text/chat?version=2023-10-25'
+    
+    _CHAT_COMPLETION_ENDPOINT = "/ml/v1/text/chat?version=2023-10-25"
 
     def __init__(self, **config):
         """
         Initialize the WatsonX provider with the given configuration.
         The API key is fetched from the config or environment variables.
         """
-        self.api_key = config.get("api_key", os.getenv("IBM_ACCESS_TOKEN"))
-        self.project_id = config.get("watsonx_project_id", os.getenv("WATSONX_PROJECT_ID"))
+        self.api_key = config.get("api_key", os.getenv("IBM_IAM_ACCESS_TOKEN"))
+        self.project_id = config.get("project_id", os.getenv("WATSONX_PROJECT_ID"))
         self.cluster_url = config.get("cluster_url", os.getenv("WATSONX_CLUSTER_URL"))
-
+        
         if not self.api_key:
             raise ValueError(
                 "WatsonX API key is missing. Please provide it in the config or set the WATSONX_API_KEY environment variable."
@@ -30,6 +29,13 @@ class WatsonxProvider(Provider):
             raise ValueError(
                 "WatsonX Project ID is missing. Please provide it in the config or set the WATSONX_PROJECT_ID environment variable."
             )
+        
+        if not self.cluster_url:
+            raise ValueError(
+                "WatsonX Cluster URL is missing. Please provide it in the config or set the WATSONX_CLUSTER_URL environment variable."
+            )
+        
+        self._base_url = f'{self.cluster_url}{self._CHAT_COMPLETION_ENDPOINT}'
         
         # Optionally set a custom timeout (default to 30s)
         self.timeout = config.get("timeout", 30)
@@ -42,7 +48,6 @@ class WatsonxProvider(Provider):
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
-
         data = {
             "model_id": model,
             "project_id": self.project_id,
@@ -53,7 +58,7 @@ class WatsonxProvider(Provider):
         try:
             # Make the request to WatsonX AI endpoint.
             response = httpx.post(
-                self.BASE_URL, json=data, headers=headers, timeout=self.timeout
+                self._base_url, json=data, headers=headers, timeout=self.timeout
             )
             response.raise_for_status()
 
