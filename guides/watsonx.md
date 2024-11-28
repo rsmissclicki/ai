@@ -20,10 +20,10 @@ Once you have obtained the access token, set your Access Token, Project ID, Clus
 ```shell
 export WATSONX_PROJECT_ID="your-project-id"
 export IBM_IAM_ACCESS_TOKEN="your-access-token"
-export WATSONX_CLUSTER_URL="your-cluster-url"
+export WATSONX_CLUSTER_URL="https://your-cluster-url.com"
 ```
 
-*Note: The `WATSONX_CLUSTER_URL` is the base URL for the Watsonx AI service cluster you are using. It is essential to use the correct cluster URL to ensure that your API requests are directed to the appropriate service endpoint. You can find the list of endpoints [here](https://cloud.ibm.com/apidocs/watsonx-ai#endpoint-url).*
+*Note: The `WATSONX_CLUSTER_URL` is the base URL for the Watsonx AI service cluster you are using. It is essential to use the correct cluster URL for the region where your project is hosted to ensure that your API requests are directed to the appropriate service endpoint. You can find the list of endpoints [here](https://cloud.ibm.com/apidocs/watsonx-ai#endpoint-url).*
 
 ## Supported Foundation models
 
@@ -39,7 +39,7 @@ Watsonx AI Provider offers powerful AI capabilities to enhance your applications
 import aisuite as ai
 client = ai.Client()
 
-provider="watsonx
+provider="watsonx"
 model_id = "meta-llama/llama-3-8b-instruct"
 
 messages = [
@@ -47,12 +47,11 @@ messages = [
     {"role": "user", "content": "Tell me a joke."},
 ]
 
-for model in models:
-    response = client.chat.completions.create(
-        model=f"{provider}:{model_id}",
-        messages=messages,
-    )
-    print(response.choices[0].message.content)
+response = client.chat.completions.create(
+    model=f"{provider}:{model_id}",
+    messages=messages,
+)
+print(response.choices[0].message.content)
 ```
 
 Happy coding! If you would like to contribute, please read our [Contributing Guide](CONTRIBUTING.md).
