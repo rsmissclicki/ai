@@ -43,4 +43,4 @@ def test_zhipuai_provider():
             temperature=chosen_temperature,
         )
 
-        assert response.choices[0].message.content == response_text_content 
+        assert response.choices[0].message.content == response_text_content

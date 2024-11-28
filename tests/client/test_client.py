@@ -4,6 +4,7 @@ from aisuite import Client
 
 
 class TestClient(unittest.TestCase):
+    @patch("aisuite.providers.zhipuai_provider.ZhipuaiProvider.chat_completions_create")
     @patch("aisuite.providers.mistral_provider.MistralProvider.chat_completions_create")
     @patch("aisuite.providers.groq_provider.GroqProvider.chat_completions_create")
     @patch("aisuite.providers.openai_provider.OpenaiProvider.chat_completions_create")
@@ -16,7 +17,6 @@ class TestClient(unittest.TestCase):
     @patch(
         "aisuite.providers.fireworks_provider.FireworksProvider.chat_completions_create"
     )
-    @patch("aisuite.providers.zhipuai_provider.ZhipuaiProvider.chat_completions_create")
     def test_client_chat_completions(
         self,
         mock_fireworks,
