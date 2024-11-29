@@ -21,6 +21,7 @@ Once you have obtained the access token, set your Access Token, Project ID, Clus
 export WATSONX_PROJECT_ID="your-project-id"
 export IBM_IAM_ACCESS_TOKEN="your-access-token"
 export WATSONX_CLUSTER_URL="https://your-cluster-url.com"
+export WATSONX_API_VERSION="2023-10-25" # Optional
 ```
 
 *Note: The `WATSONX_CLUSTER_URL` is the base URL for the Watsonx AI service cluster you are using. It is essential to use the correct cluster URL for the region where your project is hosted to ensure that your API requests are directed to the appropriate service endpoint. You can find the list of endpoints [here](https://cloud.ibm.com/apidocs/watsonx-ai#endpoint-url).*
