@@ -25,7 +25,7 @@ export AWS_ACCESS_KEY="your-access-key"
 export AWS_SECRET_KEY="your-secret-key"
 export AWS_REGION_NAME="region-name" 
 ```
-
+*Note: AWS_REGION_NAME is optional, a default of `us-west-2` has been set for easy of use*
 *Note: For AWS_REGION_NAME, you can specify multiple regions using forward slash as separator (e.g. "us-east-1/us-west-2"). When the quota limit is reached in one region, the system will automatically rotate to the next available region.*
 
 ## Multi-Region Support
