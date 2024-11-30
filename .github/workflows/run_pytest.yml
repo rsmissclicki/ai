@@ -21,4 +21,4 @@ jobs:
           poetry install
       - name: Test with pytest
         run: poetry run pytest
-
+https://app.codegpt.co/marketplace/agents/gpt-4o
